@@ -1,14 +1,14 @@
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 
 _MODEL = None
 
 def get_model():
     global _MODEL
     if _MODEL is None:
-        _MODEL = SentenceTransformer('all-MiniLM-L6-v2')
+        _MODEL = TextEmbedding(model_name="BAAI/bge-small-en")
     return _MODEL
 
 
 def embed_texts(texts):
     model = get_model()
-    return model.encode(texts, show_progress_bar=False).tolist()
+    return [list(e) for e in model.embed(texts)]

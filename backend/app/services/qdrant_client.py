@@ -19,11 +19,22 @@ class QdrantWrapper:
 
     def _ensure_collection(self, vector_size: int = 384):
         exists = self.client.get_collections().collections
-        if not any(c.name == COLLECTION for c in exists):
-            self.client.create_collection(
-                collection_name=COLLECTION,
-                vectors_config=rest.VectorParams(size=vector_size, distance=rest.Distance.COSINE)
-            )
+        matching = next((c.name for c in exists if c.name == COLLECTION), None)
+        if matching:
+            # Check if dimension matches — recreate if not
+            info = self.client.get_collection(COLLECTION)
+            actual = info.config.params.vector_size
+            if actual != vector_size:
+                self.client.delete_collection(COLLECTION)
+                self.client.create_collection(
+                    collection_name=COLLECTION,
+                    vectors_config=rest.VectorParams(size=vector_size, distance=rest.Distance.COSINE)
+                )
+            return
+        self.client.create_collection(
+            collection_name=COLLECTION,
+            vectors_config=rest.VectorParams(size=vector_size, distance=rest.Distance.COSINE)
+        )
 
     def upsert(self, vectors, payloads):
         # Ensure collection exists with correct dimension on first insert

@@ -17,4 +17,4 @@ class Document(Base):
     round_type: Mapped[str] = mapped_column(String, index=True)
     topic: Mapped[str] = mapped_column(String, index=True)
     year: Mapped[int] = mapped_column(Integer, index=True)
-    uploaded_by: Mapped[int] = mapped_column(Integer)
+    uploaded_by: Mapped[int | None] = mapped_column(Integer, nullable=True)

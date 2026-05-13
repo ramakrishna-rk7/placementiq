@@ -1,0 +1,10 @@
+# Dependencies
+frontend/.next/
+frontend/node_modules/
+frontend/.env.local
+backend/.env
+backend/.venv/
+backend/**/__pycache__/
+backend/*.db
+*.egg-info/
+**/*.egg-info/

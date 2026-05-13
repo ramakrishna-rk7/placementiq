@@ -26,6 +26,8 @@ class QdrantWrapper:
             )
 
     def upsert(self, vectors, payloads):
+        # Ensure collection exists with correct dimension on first insert
+        self._ensure_collection(vector_size=len(vectors[0]))
         points = []
         for vec, payload in zip(vectors, payloads):
             points.append(rest.PointStruct(id=payload['id'], vector=vec, payload=payload))

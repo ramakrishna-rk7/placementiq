@@ -17,7 +17,7 @@ export default function QueryPage() {
 
     setHistory(prev => [question, ...prev].slice(0, 8));
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/query/stream`, {
+    const res = await fetch('https://placementiq-2fk6.onrender.com/query/stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question })

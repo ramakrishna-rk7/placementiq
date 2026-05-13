@@ -8,7 +8,7 @@ export default function Analytics() {
   const [clusters, setClusters] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:18081/analytics/semantic-topics')
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE}/analytics/semantic-topics`)
       .then(r => r.json())
       .then(res => setClusters(res.clusters || []));
   }, []);

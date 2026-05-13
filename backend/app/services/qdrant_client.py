@@ -23,7 +23,12 @@ class QdrantWrapper:
         if matching:
             # Check if dimension matches — recreate if not
             info = self.client.get_collection(COLLECTION)
-            actual = info.config.params.vector_size
+            # qdrant-client >= 1.9: vector_size is inside params.vectors dict
+            vectors_cfg = info.config.params.vectors
+            if isinstance(vectors_cfg, dict):
+                actual = next(iter(vectors_cfg.values())).size
+            else:
+                actual = vectors_cfg.size
             if actual != vector_size:
                 self.client.delete_collection(COLLECTION)
                 self.client.create_collection(
@@ -41,7 +46,11 @@ class QdrantWrapper:
         self._ensure_collection(vector_size=len(vectors[0]))
         points = []
         for vec, payload in zip(vectors, payloads):
-            points.append(rest.PointStruct(id=payload['id'], vector=vec, payload=payload))
+            points.append(rest.PointStruct(
+                id=payload.get('id'),
+                vector=vec,
+                payload={k: v for k, v in payload.items() if k != 'id'}
+            ))
         self.client.upsert(collection_name=COLLECTION, points=points)
 
     def search(self, vector, top_k=5, filters=None):

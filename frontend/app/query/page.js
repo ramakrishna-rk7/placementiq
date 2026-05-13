@@ -104,7 +104,7 @@ export default function QueryPage() {
         <div className="mt-6 flex items-center gap-3">
           <input
             className="flex-1 bg-surface border border-white/10 rounded-full px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500/50"
-            placeholder="Ask a question..."
+            placeholder="Ask about placement questions..."
             value={question}
             onChange={e => setQuestion(e.target.value)}
           />

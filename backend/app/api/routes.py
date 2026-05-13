@@ -82,7 +82,7 @@ async def upload_document(
 ):
     try:
         db: Session = next(get_db())
-        user = get_current_user(db, authorization)
+        # Auth bypassed for MVP — add role check here before going to prod
         data = await file.read()
         metadata = {"company": company, "round_type": round_type, "topic": topic, "year": year, "filename": file.filename}
         res = index_document(file.filename, data, metadata)
@@ -90,7 +90,7 @@ async def upload_document(
             return JSONResponse(status_code=400, content=res)
         doc = Document(
             filename=file.filename, company=company, round_type=round_type,
-            topic=topic, year=year, uploaded_by=user.id
+            topic=topic, year=year, uploaded_by=None
         )
         db.add(doc)
         db.commit()

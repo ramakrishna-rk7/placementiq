@@ -97,9 +97,13 @@ def answer_question(question: str, filters: dict | None = None):
     q = get_qdrant()
     results = q.search(q_vec, top_k=5, filters=filters or {})
 
-    context = [r.payload.get("text", "") for r in results]
+    # Filter by score — require at least 0.3 similarity to avoid hallucination
+    MIN_SCORE = 0.3
+    relevant = [r for r in results if r.score >= MIN_SCORE]
+
+    context = [r.payload.get("text", "") for r in relevant]
     sources = []
-    for r in results:
+    for r in relevant:
         p = r.payload
         sources.append({
             "filename": p.get("filename"),
@@ -111,8 +115,8 @@ def answer_question(question: str, filters: dict | None = None):
             "text": p.get("text")
         })
 
-    if not context:
-        return {"answer": "No relevant data found. Try uploading documents first.", "sources": []}
+    if not relevant:
+        return {"answer": "No relevant data found for your query. Try asking about the uploaded companies or topics.", "sources": []}
 
     joined = "\n\n".join(context[:5])
     prompt = f"Question: {question}\n\nContext:\n{joined}\n\nProvide the most repeated and high-priority questions/topics."
@@ -129,9 +133,13 @@ def answer_question_stream(question: str, filters: dict | None = None):
     q = get_qdrant()
     results = q.search(q_vec, top_k=5, filters=filters or {})
 
-    context = [r.payload.get("text", "") for r in results]
+    # Filter by score — require at least 0.3 similarity to avoid hallucination
+    MIN_SCORE = 0.3
+    relevant = [r for r in results if r.score >= MIN_SCORE]
+
+    context = [r.payload.get("text", "") for r in relevant]
     sources = []
-    for r in results:
+    for r in relevant:
         p = r.payload
         sources.append({
             "filename": p.get("filename"),
@@ -142,8 +150,8 @@ def answer_question_stream(question: str, filters: dict | None = None):
             "page": p.get("page"),
         })
 
-    if not context:
-        yield {"type": "answer", "content": "No relevant data found. Try uploading documents first."}
+    if not relevant:
+        yield {"type": "answer", "content": "No relevant data found for your query. Try asking about the uploaded companies or topics."}
         yield {"type": "sources", "items": []}
         return
 

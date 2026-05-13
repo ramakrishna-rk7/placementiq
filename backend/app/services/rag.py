@@ -89,6 +89,53 @@ def groq_chat_stream(prompt: str):
                     continue
 
 
+def _extract_query_terms(question: str):
+    """Pull out company/topic keywords from the query."""
+    q = question.lower()
+    # Known companies
+    companies = ['tcs', 'infosys', 'wipro', 'capgemini', 'accenture', 'cts', 'cognizant',
+                 'amazon', 'google', 'microsoft', 'meta', 'netflix', 'adobe', 'salesforce',
+                 'mindtree', 'tech mahindra', 'hcl', 'ibm', 'oracle', 'sap']
+    topics = ['dbms', 'sql', 'mysql', 'mongodb', 'postgres', 'database',
+              'os', 'operating system', 'cn', 'computer networks', 'networking',
+              'dsa', 'data structures', 'algorithms', 'oops', 'object oriented',
+              'java', 'python', 'c++', 'javascript', 'coding', 'aptitude', 'logical']
+    found_companies = [c for c in companies if c in q]
+    found_topics = [t for t in topics if t in q]
+    return set(found_companies), set(found_topics)
+
+
+def _is_relevant(query: str, results):
+    """Check if retrieved docs are actually relevant to the query."""
+    q_companies, q_topics = _extract_query_terms(query)
+
+    if not q_companies and not q_topics:
+        return True  # Generic query, trust the retriever
+
+    for r in results:
+        p = r.payload or {}
+        doc_company = (p.get('company') or '').lower()
+        doc_topic = (p.get('topic') or '').lower()
+        doc_round = (p.get('round_type') or '').lower()
+        doc_text = (p.get('text') or '').lower()
+
+        # If query mentions a company, doc should mention it or be from that company
+        if q_companies:
+            matched_company = any(c in doc_company or c in doc_topic or
+                                   c in doc_round or c in doc_text
+                                   for c in q_companies)
+            if not matched_company:
+                return False
+
+        # If query mentions a specific topic, doc should reference it
+        if q_topics:
+            matched_topic = any(t in doc_topic or t in doc_text for t in q_topics)
+            if not matched_topic:
+                return False
+
+    return True
+
+
 def answer_question(question: str, filters: dict | None = None):
     if not question:
         return {"answer": "Please provide a question.", "sources": []}
@@ -100,6 +147,10 @@ def answer_question(question: str, filters: dict | None = None):
     # Filter by score — require at least 0.3 similarity to avoid hallucination
     MIN_SCORE = 0.3
     relevant = [r for r in results if r.score >= MIN_SCORE]
+
+    # Additional semantic filter: ensure doc metadata/text matches query intent
+    if relevant and not _is_relevant(question, relevant):
+        return {"answer": "No relevant data found for your query. Try asking about the uploaded companies or topics.", "sources": []}
 
     context = [r.payload.get("text", "") for r in relevant]
     sources = []
@@ -133,9 +184,15 @@ def answer_question_stream(question: str, filters: dict | None = None):
     q = get_qdrant()
     results = q.search(q_vec, top_k=5, filters=filters or {})
 
-    # Filter by score — require at least 0.3 similarity to avoid hallucination
+    # Filter by score
     MIN_SCORE = 0.3
     relevant = [r for r in results if r.score >= MIN_SCORE]
+
+    # Additional semantic filter
+    if relevant and not _is_relevant(question, relevant):
+        yield {"type": "answer", "content": "No relevant data found for your query. Try asking about the uploaded companies or topics."}
+        yield {"type": "sources", "items": []}
+        return
 
     context = [r.payload.get("text", "") for r in relevant]
     sources = []

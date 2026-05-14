@@ -1,46 +1,54 @@
 # PlacementIQ
 
+![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Next.js](https://img.shields.io/badge/Next.js-14.2.5-black?logo=nextdotjs&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115.0-009688?logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python&logoColor=white)
+![Qdrant](https://img.shields.io/badge/Qdrant-Cloud-ef4444?logo=qdrant&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-LLM-7c3aed)
+![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.4-38bdf8?logo=tailwindcss&logoColor=white)
+![License](https://img.shields.io/badge/license-portfolio-lightgrey)
+![Repo Size](https://img.shields.io/github/repo-size/ramakrishna-rk7/placementiq)
+![Last Commit](https://img.shields.io/github/last-commit/ramakrishna-rk7/placementiq)
+![Top Language](https://img.shields.io/github/languages/top/ramakrishna-rk7/placementiq)
+
 PlacementIQ is a full-stack AI platform for placement preparation. It helps students, job seekers, and campus placement teams upload interview documents, search them with semantic retrieval, and generate high-signal answers with page-level citations.
 
-Built with a production-minded architecture:
-- Next.js frontend for a fast, polished UI
-- FastAPI backend for retrieval, authentication, and document processing
-- Qdrant Cloud for persistent vector search
-- Groq for low-latency LLM responses
-- TF-IDF embeddings for a lightweight, free-tier-friendly deployment
+It is built as a practical, deployable product rather than a toy demo. The project combines document ingestion, vector search, streaming generation, semantic analytics, and authentication into one polished experience.
 
-Live Demo
+## Live Demo
+
 - Frontend: https://placementiq-peach.vercel.app
-- Backend API: https://placementiq-2fk6.onrender.com
 
-Repository
+## Repository
+
 - GitHub: https://github.com/ramakrishna-rk7/placementiq
 
 ## What PlacementIQ Does
 
-PlacementIQ centralizes placement materials and turns them into a searchable, explainable knowledge base.
+PlacementIQ turns placement materials into a searchable, explainable knowledge base.
 
 Core capabilities:
 - Upload placement papers, interview notes, HR guides, and preparation documents
 - Extract text from PDF, DOCX, and TXT files
 - Chunk documents into retrieval-friendly segments
-- Store embeddings and metadata in Qdrant Cloud for persistent search
+- Store embeddings and metadata in Qdrant Cloud for persistent semantic search
 - Ask natural-language questions and receive streamed answers
 - Show citations with filename and page number when available
 - Analyze document collections through semantic clustering
 - Support authentication with JWT-based login and signup endpoints
 
-## Why This Project Stands Out
+## Why Recruiters and Interviewers Should Care
 
-PlacementIQ is designed to be more than a demo. It focuses on practical product and engineering choices that recruiters and interviewers usually care about:
+PlacementIQ demonstrates the kind of engineering that matters in real products:
 
-- Production-style architecture: separate frontend, backend, vector database, and LLM provider
-- Persistent vector storage: Qdrant Cloud is required, not optional or in-memory
-- Streaming UX: answers arrive incrementally via SSE instead of waiting for a full response
-- Explainability: retrieved answers include source metadata and citations
-- Lightweight deployment: uses TF-IDF embeddings instead of heavy PyTorch-based models
-- Deployment awareness: optimized for Render and Vercel free tiers
-- Clean separation of concerns: document processing, embeddings, retrieval, analytics, and auth are isolated into services
+- Full-stack architecture: separate frontend, backend, vector database, and LLM provider
+- Retrieval-augmented generation: grounded answers from document context, not generic chat output
+- Streaming UX: answers arrive incrementally via Server-Sent Events
+- Explainability: responses include source metadata and citations
+- Production constraints awareness: lightweight embeddings instead of expensive model stacks
+- Cloud deployment experience: Vercel, Render, Qdrant Cloud, and Groq integration
+- Clean service boundaries: document processing, embeddings, retrieval, analytics, and auth are separated
 
 ## Key Features
 
@@ -87,7 +95,7 @@ The backend includes basic signup/login flows with:
 - role support
 - protected analytics endpoints
 
-## Tech Stack
+## Tools and Technologies
 
 ### Frontend
 - Next.js 14
@@ -110,7 +118,7 @@ The backend includes basic signup/login flows with:
 - scikit-learn
 - Qdrant client
 
-### Infrastructure
+### Infrastructure and Services
 - Vercel for frontend hosting
 - Render for backend hosting
 - Qdrant Cloud for vector persistence
@@ -243,7 +251,7 @@ This project is deployed as a monorepo:
 Important deployment details:
 - Set the backend Python version to 3.12 on Render
 - Use a persistent Qdrant Cloud cluster
-- Set `NEXT_PUBLIC_API_BASE` on Vercel to the Render backend URL
+- Set `NEXT_PUBLIC_API_BASE` on Vercel to the deployed backend URL
 - Redeploy Vercel after changing environment variables
 
 ## Notes on Embeddings

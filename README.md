@@ -18,7 +18,7 @@ It is built as a practical, deployable product rather than a toy demo. The proje
 
 ## Live Demo
 
-- Frontend: https://placementiq-peach.vercel.app
+- URL: https://placementiq-peach.vercel.app
 
 ## Repository
 
